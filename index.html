@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Competencia Claude vs GPT</title>
+<style>
+:root{--bg:#0f1116;--card:#171a21;--line:#262b36;--mut:#8a93a6;--txt:#e9edf4;--up:#2ecc71;--down:#ff5c5c;--claude:#d97757;--gpt:#10a37f;}
+*{box-sizing:border-box;}body{font-family:-apple-system,Segoe UI,sans-serif;background:var(--bg);margin:0;padding:20px;color:var(--txt);}
+.wrap{max-width:1080px;margin:0 auto;}
+h1{font-size:20px;margin:0 0 2px;text-align:center;}
+.subt{font-size:12px;color:var(--mut);text-align:center;margin-bottom:14px;}
+.count{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center;margin-bottom:16px;}
+.count .now{font-size:12px;color:var(--mut);}
+.count .big{font-size:26px;font-weight:800;margin-top:4px;}
+.count .lbl{font-size:11px;color:var(--mut);}
+.standings{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:16px;}
+.sd{text-align:center;} .sd .who{font-size:13px;font-weight:800;} .sd .v{font-size:22px;font-weight:800;margin-top:2px;} .sd .r{font-size:12px;font-weight:700;}
+.vs{font-size:13px;color:var(--mut);font-weight:800;}
+.lead{font-size:11px;text-align:center;color:var(--mut);margin-top:6px;}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;}
+.phead{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.badge{font-size:13px;font-weight:800;padding:5px 12px;border-radius:8px;color:#fff;}
+.bclaude{background:var(--claude);} .bgpt{background:var(--gpt);}
+.pstrat{font-size:11.5px;color:var(--mut);}
+table{width:100%;border-collapse:collapse;}
+th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line);font-size:12.5px;}
+th{font-size:9.5px;color:var(--mut);text-transform:uppercase;}
+td:first-child,th:first-child{text-align:left;}
+.num{font-variant-numeric:tabular-nums;font-weight:700;}
+.up{color:var(--up);}.down{color:var(--down);}
+input.px{width:84px;background:#0f1116;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px 7px;text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;}
+.tot{font-weight:800;font-size:14px;}
+.btn{background:var(--blue,#4f8cff);color:#fff;border:none;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;}
+.btn2{background:#2a3140;color:#e9edf4;border:1px solid var(--line);border-radius:9px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 4px;}
+select{background:#0f1116;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px;font-size:13px;}
+.note{font-size:11px;color:var(--mut);margin-top:8px;line-height:1.5;}
+.win{color:var(--up);font-weight:800;}
+.mtable td:first-child{font-weight:700;}
+.foot{font-size:10.5px;color:var(--mut);line-height:1.6;margin-top:16px;border-top:1px solid var(--line);padding-top:12px;}
+</style></head><body><div class="wrap">
+
+<h1>🏁 Competencia de estrategias · Claude vs GPT</h1>
+<div class="subt">$100.000 cada uno · inicio 12-jun-2026 (precios reales de cierre, Yahoo Finance) · meta 31-dic-2026</div>
+
+<div class="count">
+  <div class="now" id="now"></div>
+  <div class="big" id="cd"></div>
+  <div class="lbl">para el cierre de la competencia (31-dic-2026)</div>
+</div>
+
+<div class="standings">
+  <div class="sd"><div class="who" style="color:var(--claude)">CLAUDE</div><div class="v" id="cval">$100,000</div><div class="r" id="cret">+0.0%</div></div>
+  <div class="vs">VS</div>
+  <div class="sd"><div class="who" style="color:var(--gpt)">GPT</div><div class="v" id="gval">$100,000</div><div class="r" id="gret">+0.0%</div></div>
+</div>
+<div class="lead" id="lead">Empate — actualizá los precios para ver quién va ganando.</div>
+
+<div class="bar">
+  <button class="btn" onclick="update()">🔄 Actualizar precios y standings</button>
+  <button class="btn2" onclick="resetPx()">Reset precios a hoy</button>
+  <span class="note" style="margin:0">Tip: poné el precio actual de cada acción (lo sacás gratis de finance.yahoo.com) y apretá Actualizar.</span>
+</div>
+
+<!-- CLAUDE -->
+<div class="panel">
+  <div class="phead"><span class="badge bclaude">CLAUDE</span>
+    <span class="pstrat">Momentum top-5 (Nasdaq-100) · $20.000 por acción · rota mensual a las más fuertes con filtro de tendencia 200d</span></div>
+  <table id="tclaude"><thead><tr><th>Acción</th><th>Acciones</th><th>Precio entrada</th><th>Precio actual</th><th>Valor</th><th>P&L</th></tr></thead><tbody></tbody>
+  <tfoot><tr><td colspan="4" class="tot">TOTAL CLAUDE</td><td class="num tot" id="ctot">$100,000</td><td class="num tot" id="cpl">+0.0%</td></tr></tfoot></table>
+</div>
+
+<!-- GPT -->
+<div class="panel">
+  <div class="phead"><span class="badge bgpt">GPT</span>
+    <span class="pstrat">Cartera ofensiva concentrada · megatendencias + apuestas asimétricas + 20% caja</span></div>
+  <table id="tgpt"><thead><tr><th>Acción</th><th>Acciones</th><th>Precio entrada</th><th>Precio actual</th><th>Valor</th><th>P&L</th></tr></thead><tbody></tbody>
+  <tfoot><tr><td colspan="4" class="tot">TOTAL GPT</td><td class="num tot" id="gtot">$100,000</td><td class="num tot" id="gpl">+0.0%</td></tr></tfoot></table>
+</div>
+
+<!-- MONTHLY -->
+<div class="panel">
+  <div class="phead"><span style="font-size:15px;font-weight:800">📅 Seguimiento mensual</span></div>
+  <div class="bar">
+    <select id="msel"></select>
+    <button class="btn" onclick="snap()">📸 Guardar snapshot del mes</button>
+    <button class="btn2" onclick="clearSnaps()">Borrar historial</button>
+  </div>
+  <table class="mtable"><thead><tr><th>Mes</th><th>Claude $</th><th>Claude %</th><th>GPT $</th><th>GPT %</th><th>Líder</th></tr></thead>
+  <tbody id="mbody"></tbody></table>
+  <div class="note">Apretá "Guardar snapshot" cada fin de mes para registrar cómo va cada cartera. Se guarda en tu navegador.</div>
+</div>
+
+<div class="foot">
+Precios de entrada = cierre real del 12-jun-2026 (Yahoo Finance). Las acciones (cantidades) quedan fijas desde el inicio. CLAUDE: en la realidad rotaría mensualmente; aquí se congela la selección inicial para una comparación justa de "cartera del día 1". El P&L se calcula con los precios actuales que ingreses. No incluye comisiones ni dividendos. Esto es un ejercicio educativo sobre datos reales, no asesoría financiera.
+</div>
+</div>
+
+<script>
+const CLAUDE={name:'claude',cash:0,holds:[
+ {tk:'MU',sh:20.374,entry:981.61},{tk:'INTC',sh:160.552,entry:124.57},
+ {tk:'AMD',sh:39.095,entry:511.57},{tk:'ON',sh:171.247,entry:116.79},
+ {tk:'LRCX',sh:54.524,entry:366.81}]};
+const GPT={name:'gpt',cash:20000,holds:[
+ {tk:'NVDA',sh:73.103,entry:205.19},{tk:'MSFT',sh:25.592,entry:390.74},
+ {tk:'GOOGL',sh:27.803,entry:359.68},{tk:'AVGO',sh:26.173,entry:382.07},
+ {tk:'AMZN',sh:20.960,entry:238.55},{tk:'PLTR',sh:78.131,entry:127.99},
+ {tk:'RKLB',sh:48.833,entry:102.39},{tk:'COIN',sh:31.293,entry:159.78},
+ {tk:'QQQ',sh:13.863,entry:721.34}]};
+const START=100000;
+const fmt=v=>'$'+Math.round(v).toLocaleString('en-US');
+const pct=v=>(v>=0?'+':'')+v.toFixed(1)+'%';
+
+function savedPx(){try{return JSON.parse(localStorage.getItem('comppx')||'{}');}catch(e){return {};}}
+function setPx(o){localStorage.setItem('comppx',JSON.stringify(o));}
+
+function rowHTML(h,prefix){
+  const sp=savedPx(); const cur=sp[h.tk]!=null?sp[h.tk]:h.entry;
+  return `<tr><td><b>${h.tk}</b></td><td class="num">${h.sh.toFixed(2)}</td>
+   <td class="num">$${h.entry.toFixed(2)}</td>
+   <td><input class="px" id="px-${prefix}-${h.tk}" value="${cur}" inputmode="decimal"></td>
+   <td class="num" id="val-${prefix}-${h.tk}">$0</td>
+   <td class="num" id="pl-${prefix}-${h.tk}">+0.0%</td></tr>`;
+}
+function build(p,prefix,tblId){
+  document.querySelector('#'+tblId+' tbody').innerHTML=p.holds.map(h=>rowHTML(h,prefix)).join('');
+}
+function valOf(p,prefix){
+  let v=p.cash;
+  p.holds.forEach(h=>{
+    const el=document.getElementById('px-'+prefix+'-'+h.tk);
+    const cur=el?parseFloat(el.value)||h.entry:h.entry;
+    const val=h.sh*cur; v+=val;
+    const vEl=document.getElementById('val-'+prefix+'-'+h.tk);
+    const plEl=document.getElementById('pl-'+prefix+'-'+h.tk);
+    if(vEl)vEl.textContent=fmt(val);
+    if(plEl){const r=(cur/h.entry-1)*100;plEl.textContent=pct(r);plEl.className='num '+(r>=0?'up':'down');}
+  });
+  return v;
+}
+function update(){
+  // persist entered prices
+  const sp={};
+  [['claude',CLAUDE],['gpt',GPT]].forEach(([pre,p])=>p.holds.forEach(h=>{
+    const el=document.getElementById('px-'+pre+'-'+h.tk); if(el)sp[h.tk]=parseFloat(el.value)||h.entry;}));
+  setPx(sp);
+  const cv=valOf(CLAUDE,'claude'), gv=valOf(GPT,'gpt');
+  const cr=(cv/START-1)*100, gr=(gv/START-1)*100;
+  document.getElementById('ctot').textContent=fmt(cv);
+  document.getElementById('cpl').textContent=pct(cr);document.getElementById('cpl').className='num tot '+(cr>=0?'up':'down');
+  document.getElementById('gtot').textContent=fmt(gv);
+  document.getElementById('gpl').textContent=pct(gr);document.getElementById('gpl').className='num tot '+(gr>=0?'up':'down');
+  document.getElementById('cval').textContent=fmt(cv);
+  document.getElementById('cret').textContent=pct(cr);document.getElementById('cret').className='r '+(cr>=0?'up':'down');
+  document.getElementById('gval').textContent=fmt(gv);
+  document.getElementById('gret').textContent=pct(gr);document.getElementById('gret').className='r '+(gr>=0?'up':'down');
+  const diff=cv-gv;
+  const L=document.getElementById('lead');
+  if(Math.abs(diff)<1)L.innerHTML='Empate técnico.';
+  else if(diff>0)L.innerHTML='🟠 <span class="win" style="color:var(--claude)">CLAUDE</span> va ganando por '+fmt(Math.abs(diff));
+  else L.innerHTML='🟢 <span class="win" style="color:var(--gpt)">GPT</span> va ganando por '+fmt(Math.abs(diff));
+  return {cv,gv,cr,gr};
+}
+function resetPx(){localStorage.removeItem('comppx');build(CLAUDE,'claude','tclaude');build(GPT,'gpt','tgpt');update();}
+
+// monthly snapshots
+const MONTHS=['2026-06','2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'];
+const MLAB={'2026-06':'Junio','2026-07':'Julio','2026-08':'Agosto','2026-09':'Septiembre','2026-10':'Octubre','2026-11':'Noviembre','2026-12':'Diciembre'};
+function getSnaps(){try{return JSON.parse(localStorage.getItem('compsnaps')||'{}');}catch(e){return {};}}
+function setSnaps(o){localStorage.setItem('compsnaps',JSON.stringify(o));}
+function snap(){
+  const m=document.getElementById('msel').value; const s=update(); const all=getSnaps();
+  all[m]={cv:s.cv,gv:s.gv,cr:s.cr,gr:s.gr,date:new Date().toISOString().slice(0,10)}; setSnaps(all); renderMonths();
+}
+function clearSnaps(){if(confirm('¿Borrar todo el historial mensual?')){localStorage.removeItem('compsnaps');renderMonths();}}
+function renderMonths(){
+  const all=getSnaps(); let html='';
+  MONTHS.forEach(m=>{
+    const s=all[m];
+    if(s){const lead=s.cv>s.gv?'<span style="color:var(--claude)">Claude</span>':(s.gv>s.cv?'<span style="color:var(--gpt)">GPT</span>':'—');
+      html+=`<tr><td>${MLAB[m]} <span style="color:var(--mut);font-size:10px">${s.date}</span></td>
+       <td class="num">${fmt(s.cv)}</td><td class="num ${s.cr>=0?'up':'down'}">${pct(s.cr)}</td>
+       <td class="num">${fmt(s.gv)}</td><td class="num ${s.gr>=0?'up':'down'}">${pct(s.gr)}</td><td>${lead}</td></tr>`;
+    } else {
+      html+=`<tr><td>${MLAB[m]}</td><td class="num" style="color:var(--mut)">—</td><td class="num" style="color:var(--mut)">—</td><td class="num" style="color:var(--mut)">—</td><td class="num" style="color:var(--mut)">—</td><td style="color:var(--mut)">—</td></tr>`;
+    }
+  });
+  document.getElementById('mbody').innerHTML=html;
+}
+
+// countdown
+function tick(){
+  const now=new Date(); const end=new Date('2026-12-31T23:59:59');
+  document.getElementById('now').textContent='Ahora: '+now.toLocaleString('es-AR');
+  let s=Math.max(0,Math.floor((end-now)/1000));
+  const d=Math.floor(s/86400);s-=d*86400;const h=Math.floor(s/3600);s-=h*3600;const mi=Math.floor(s/60);const se=s-mi*60;
+  document.getElementById('cd').textContent=`${d}d ${h}h ${mi}m ${se}s`;
+}
+
+// init
+const sel=document.getElementById('msel');
+sel.innerHTML=MONTHS.map(m=>`<option value="${m}">${MLAB[m]} 2026</option>`).join('');
+const curM=new Date().toISOString().slice(0,7); if(MONTHS.includes(curM))sel.value=curM;
+build(CLAUDE,'claude','tclaude');build(GPT,'gpt','tgpt');
+update();renderMonths();tick();setInterval(tick,1000);
+</script></body></html>
